@@ -26,6 +26,7 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
             contador += 1
         elif(body_json['action'] == 'desc'):
             contador -= 1
+            
         # Print the complete HTTP request
         print("\n----- Incoming POST Request -----")
         print(f"Requestline: {self.requestline}")
