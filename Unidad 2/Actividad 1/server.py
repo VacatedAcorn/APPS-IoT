@@ -53,7 +53,7 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
             elif action == 'desc':
                 contador -= quantity
 
-            response_data = json.dumps({"message": "Contador actualizado", "contador": contador})
+            response_data = json.dumps({"message": "Contador actualizado", "contador": str(contador)})
             self._set_response("application/json")
             self.wfile.write(response_data.encode())
         else:
