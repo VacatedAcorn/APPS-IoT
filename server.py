@@ -11,33 +11,33 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self._set_response()
-        respuesta = "El valor es: " + str(contador)
-        self.wfile.write(respuesta.encode())
+        respuesta = {"valor": contador}
+        self.wfile.write(json.dumps(respuesta).encode())
 
     def do_POST(self):
         content_length = int(self.headers["Content-Length"])
         post_data = self.rfile.read(content_length)
 
-        body_json =json.loads(post_data.decode())
+        body_json = json.loads(post_data.decode())
 
         global contador
 
-        if(body_json ['action'] == "asc"):
-            contador += 1
-        elif(body_json['action'] == 'desc'):
-            contador -= 1
-            
-        # Print the complete HTTP request
-        print("\n----- Incoming POST Request -----")
-        print(f"Requestline: {self.requestline}")
-        print(f"Headers:\n{self.headers}")
-        print(f"Body:\n{post_data.decode()}")
-        print("-------------------------------")
+        if 'action' in body_json and 'quantity' in body_json:
+            action = body_json['action']
+            quantity = body_json['quantity']
 
-        # Respond to the client
-        response_data = json.dumps({"message": "Received POST data", "data": post_data.decode(), "status": "OK"})
-        self._set_response("application/json")
-        self.wfile.write(response_data.encode())
+            if action == 'asc':
+                contador += quantity
+            elif action == 'desc':
+                contador -= quantity
+
+            response_data = json.dumps({"message": "Contador actualizado", "contador": contador})
+            self._set_response("application/json")
+            self.wfile.write(response_data.encode())
+        else:
+            response_data = json.dumps({"error": "JSON de solicitud incorrecto"})
+            self._set_response("application/json")
+            self.wfile.write(response_data.encode())
 
 def run_server(server_class=HTTPServer, handler_class=MyHTTPRequestHandler, port=7800):
     server_address = ("", port)
