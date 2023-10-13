@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Página con Python</title>
+  <style>
+    body {
+      background-image: url("https://i0.wp.com/webadictos.com/media/2013/05/gif-animados-videojuegos.gif?resize=720%2C302");
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction:row;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .sectionContainer {
+      background-color: #ff00fb;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgb(255, 255, 255);
+      margin: 20px;
+      padding: 20px;
+      width: 500px;
+    }
+
+    h2,
+    h3 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-style:italic;
+    }
+
+    .buttonContainer {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #onButton {
+      background-color: #3498db;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 0 10px;
+      padding: 10px 20px;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    #offButton {
+      background-color: #e74c3c;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 0 10px;
+      padding: 10px 20px;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    #onButton:hover {
+      background-color: #2980b9;
+    }
+
+    #offButton:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sectionContainer">
+    <h2>Control de LED</h2>
+    <div class="buttonContainer">
+      <button id="onButton">ON</button>
+      <button id="offButton">OFF</button>
+    </div>
+  </div>
+
+  <div class="sectionContainer">
+    <h3>Valor del contador:</h3>
+    <div class="buttonContainer">
+      <h2 id="counterValue">##</h2>
+    </div>
+  </div>
+  <div class="sectionContainer">
+    <h3>Temperatura:</h3>
+    <div class="buttonContainer">
+      <h2 id="temperatureValue">##</h2>
+    </div>
+  </div>
+  <div class="sectionContainer">
+    <h3>Humedad:</h3>
+    <div class="buttonContainer">
+      <h2 id="humidityValue">##</h2>
+    </div>
+  </div>
+</body>
+<script>
+  // Obtiene las referencias de los elementos HTML que necesitamos
+  const onButton = document.getElementById("onButton");
+  const offButton = document.getElementById("offButton");
+  const counterDisplay = document.getElementById("counterValue"); // Elemento para el contador
+  const temperatureDisplay = document.getElementById("temperatureValue"); // Elemento para la temperatura
+  const humidityDisplay = document.getElementById("humidityValue"); // Elemento para la humedad
+
+  // Agrega un evento al botón "ON" para enviar una solicitud cuando se hace clic
+  onButton.addEventListener("click", () => {
+    fetch("/led/on"); // Envía una solicitud al servidor para encender el LED
+  });
+
+  // Agrega un evento al botón "OFF" para enviar una solicitud cuando se hace clic
+  offButton.addEventListener("click", () => {
+    fetch("/led/off"); // Envía una solicitud al servidor para apagar el LED
+  });
+
+  // Función para actualizar el valor del contador en la página
+  const updateCounter = () => {
+    fetch("/counter") // Realiza una solicitud al servidor para obtener el valor del contador
+      .then((response) => response.json()) // Parsea la respuesta JSON
+      .then((data) => {
+        counterDisplay.innerHTML = data.contador; // Actualiza el contador en la página
+      });
+  };
+
+  // Función para actualizar el valor de la temperatura en la página
+  const updateTemperature = () => {
+    fetch("/temperature") // Realiza una solicitud al servidor para obtener la temperatura
+      .then((response) => response.json()) // Parsea la respuesta JSON
+      .then((data) => {
+        const temperature = data.temperature; // Obtiene el valor de la temperatura
+        temperatureDisplay.innerHTML = temperature + " °C"; // Actualiza la temperatura en la página
+      });
+// Función para actualizar el valor de la humedad en la página
+const updateHumedad = () => {
+  fetch("/temperature") // Cambia la ruta a "/humidity" para obtener la humedad
+    .then((response) => response.json()) // Parsea la solicitud JSON
+    .then((data) => {
+      const humidity = data.humidity; // Obtiene el valor de la humedad
+      humidityDisplay.innerHTML = humidity + " %"; // Actualiza el valor de la humedad
+    });
+};
+// Actualiza la humedad cada 1 segundo
+setInterval(updateHumedad, 1000);
+  }
+  // Actualiza el contador cada 1 segundo
+  setInterval(updateCounter, 1000);
+  // Actualiza la temperatura cada 1 segundo
+  setInterval(updateTemperature, 1000);
+  // Actualiza la humedad cada 1 segundo
+  setInterval(updateHumedad, 1000);
+</script>
+</html>
